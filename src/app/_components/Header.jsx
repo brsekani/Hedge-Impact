@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
+import Image from "next/image";
+import logo from "../../../public/images/logo.png";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,10 +30,11 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
-      <div className="container mx-auto flex justify-between items-center px-6 py-4">
+      <div className="container mx-auto flex justify-between items-center px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-primary">Hedge Impact</span>
+          {/* <span className="text-2xl font-bold text-primary">Hedge Impact</span> */}
+          <Image src={logo} width={120} alt="logo" />
         </Link>
 
         {/* Desktop Nav */}
@@ -75,6 +78,11 @@ export const Header = () => {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed right-0 top-0 h-full w-4/5 max-w-xs bg-white shadow-lg p-6 flex flex-col justify-start space-y-4 z-50"
           >
+            <Link href="/" className="flex items-center gap-2">
+              {/* <span className="text-2xl font-bold text-primary">Hedge Impact</span> */}
+              <Image src={logo} width={100} alt="logo" />
+            </Link>
+
             {["About", "History", "Mission", "Values"].map((item) => (
               <Link
                 key={item}

@@ -31,7 +31,7 @@ export default function Marquee() {
           many. I'm proud to be part of this mission."
         </p>
         <p className="mt-4 text-gray-600 font-medium">
-          — Emily Carter, Volunteer Coordinator
+          — Oluwaseun Adetutu, Founder
         </p>
       </div>
 

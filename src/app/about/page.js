@@ -1,28 +1,121 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import aboutImg from "../../../public/images/larm-rmah-AEaTUnvneik-unsplash.jpg"; // Main about image
+import { useEffect, useState } from "react";
 
 const volunteers = [
   {
-    name: "Amaka Johnson",
-    role: "Community Trainer",
+    name: "Oluwaseun Adetutu",
+    role: "Founder",
     img: aboutImg,
+    fullDesc: `Oluwaseun Adetutu is a Development Economist and International Development
+Professional with extensive experience working with United Nations agencies and
+international organizations. His expertise spans operations management, capacity
+building, and programme implementation, with a proven record of advancing gender-
+responsive and sustainable development initiatives.
+
+Over the years, Oluwaseun has designed and delivered training programmes,
+supported community-based interventions, and strengthened partner organizations
+through robust monitoring, evaluation, and knowledge management systems. He has
+also worked closely with governments, NGOs, and multilateral partners to bridge the
+gap between policy and practice, ensuring that development efforts effectively reach
+intended beneficiaries.
+
+As Co-Founder of Hedge Impact Partners, Oluwaseun combines technical expertise
+with practical field experience to drive innovative solutions. He is passionate about
+empowering communities, promoting inclusive growth, and building resilient systems
+that deliver lasting impact.`,
   },
   {
-    name: "James Adeyemi",
-    role: "Climate Action Advocate",
+    name: "Dr. Segun Tekun",
+    role: "Co-Founder",
     img: aboutImg,
-  },
-  {
-    name: "Fatima Bello",
-    role: "Research & Data Lead",
-    img: aboutImg,
+    fullDesc: `Dr. Segun Tekun is a Social Protection Specialist and Socio-Economic Researcher
+with extensive experience in designing and implementing inclusive development
+programmes across Africa. He holds a PhD in Sustainable Development, with his
+research focusing on the role of social protection systems in building resilience,
+reducing poverty, and driving equitable growth.
+
+Over the years, Segun has worked with governments, UN agencies, and
+development partners to integrate social protection with agriculture, food systems,
+and climate resilience strategies. His expertise spans policy design, programme
+management, and research, with a strong track record in developing productive
+safety net programmes, advancing financial inclusion, and promoting youth and
+women’s economic empowerment.
+
+As Co-Founder, Segun brings a unique blend of academic rigor, field experience,
+and visionary leadership to drive innovative, sustainable solutions for communities
+across the continent.`,
   },
 ];
 
+function Modal({ show, onClose, title, fullDesc, image }) {
+  useEffect(() => {
+    if (show) {
+      // prevent background scroll
+      document.body.style.overflow = "hidden";
+    } else {
+      // restore scroll
+      document.body.style.overflow = "";
+    }
+    // cleanup when unmount
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [show]);
+
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-auto "
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.9, y: 40, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.9, y: 40, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 120, damping: 15 }}
+            className="relative bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl max-h-[80vh] overflow-auto "
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-4 right-1 text-2xl font-bold hidden sm:flex cursor-pointer"
+              onClick={onClose}
+            >
+              ×
+            </button>
+
+            {image && (
+              <div className="w-full h-64 md:h-80 mb-6 overflow-hidden rounded-xl">
+                <Image
+                  src={image}
+                  alt={title}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            )}
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>
+            <div className="text-gray-700 leading-relaxed space-y-4">
+              {fullDesc.split("\n\n").map((para, idx) => (
+                <p key={idx}>{para}</p>
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function About() {
+  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
+
   return (
     <section className="relative pt-10 md:pt-24  overflow-hidden">
       {/* Background Accent */}
@@ -174,6 +267,7 @@ export default function About() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0, transition: { delay: 0.2 * i } }}
               className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-shadow"
+              onClick={() => setSelectedVolunteer(volunteer)}
             >
               <div className="relative h-64 w-full">
                 <Image
@@ -295,6 +389,16 @@ export default function About() {
           }
         }
       `}</style>
+
+      {selectedVolunteer && (
+        <Modal
+          show={!!selectedVolunteer}
+          onClose={() => setSelectedVolunteer(null)}
+          title={selectedVolunteer?.name}
+          fullDesc={selectedVolunteer?.fullDesc}
+          image={selectedVolunteer?.img}
+        />
+      )}
     </section>
   );
 }

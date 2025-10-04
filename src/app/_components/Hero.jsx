@@ -51,7 +51,7 @@ function Hero() {
           custom={1}
         >
           Partnering for <span className="text-green-400">Sustainable</span>{" "}
-          Solutions
+          Impact
         </motion.h1>
 
         <motion.p

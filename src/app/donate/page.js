@@ -22,10 +22,10 @@ export default function Donate() {
     message: "",
   });
 
-  // Load Paystack script
+  // ✅ Load Flutterwave script
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = "https://js.paystack.co/v1/inline.js";
+    script.src = "https://checkout.flutterwave.com/v3.js";
     script.async = true;
     document.body.appendChild(script);
   }, []);
@@ -38,38 +38,36 @@ export default function Donate() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!window.PaystackPop) {
-      toast.error("⚠️ Payment system not ready, try again.");
-      return;
-    }
-
     if (!form.email || !form.amount) {
       toast.error("Please fill in email and amount.");
       return;
     }
 
-    const handler = window.PaystackPop.setup({
-      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY, // ✅ Public key from .env
-      email: form.email,
-      amount: Number(form.amount) * 100, // kobo
-      currency: form.currency, // ✅ NGN, USD, GBP, EUR
-      metadata: {
-        custom_fields: [
-          {
-            display_name: "Donor Name",
-            variable_name: "donor_name",
-            value: form.name,
-          },
-          {
-            display_name: "Message",
-            variable_name: "donor_message",
-            value: form.message || "",
-          },
-        ],
+    if (!window.FlutterwaveCheckout) {
+      toast.error("⚠️ Payment system not ready, try again.");
+      return;
+    }
+
+    // ✅ Flutterwave Checkout
+    window.FlutterwaveCheckout({
+      public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY, // 🔑 Your Flutterwave Public Key
+      tx_ref: Date.now().toString(),
+      amount: Number(form.amount),
+      currency: form.currency,
+      payment_options: "card, mobilemoney, ussd",
+      customer: {
+        email: form.email,
+        phonenumber: "N/A",
+        name: form.name || "Anonymous",
+      },
+      customizations: {
+        title: "Donation",
+        description: form.message || "Support our mission ❤️",
+        logo: "/favicon.ico", // ✅ optional: replace with your org logo
       },
       callback: (response) => {
+        console.log("Payment Success:", response);
         toast.success("🎉 Donation successful!");
-        console.log("Payment success:", response);
         setForm({
           name: "",
           email: "",
@@ -78,10 +76,10 @@ export default function Donate() {
           message: "",
         });
       },
-      onClose: () => toast.error("❌ Donation cancelled."),
+      onclose: () => {
+        toast.error("❌ Donation cancelled.");
+      },
     });
-
-    handler.openIframe();
   };
 
   return (
@@ -104,7 +102,7 @@ export default function Donate() {
           <div className="absolute inset-0 bg-black/20"></div>
 
           <div className="relative z-10 h-full flex items-center">
-            <div className="bg-white shadow-2xl rounded-2xl p-10 max-w-lg ml-6 md:ml-16 space-y-6">
+            <div className="bg-white shadow-2xl rounded-2xl p-10 max-w-lg mx-6 md:ml-16 space-y-6">
               <h2 className="text-4xl md:text-6xl font-bold text-primary leading-tight font-serif">
                 Give Hope <br /> Today
               </h2>
@@ -203,7 +201,7 @@ export default function Donate() {
               placeholder="Leave a message..."
               value={form.message}
               onChange={handleChange}
-              rows="4"
+              rows={4}
               className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#006e33] bg-white/70"
             />
           </div>
